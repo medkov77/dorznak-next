@@ -16,9 +16,9 @@ export class SignsService {
     return Signs;
   }
 
-  async create(dto: SignDto): Promise<Signs> {
-    const Signs = new this.SignsModel(dto);
-    const fileName = await this.filesService.createFile(dto.imgSrc);
+  async create(dto: SignDto, file: Express.Multer.File): Promise<Signs> {
+    const fileName = await this.filesService.createFile(file);
+    const Signs = new this.SignsModel({ ...dto, imgSrc: fileName });
     const sign = await Signs.save();
     return sign;
   }

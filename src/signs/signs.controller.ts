@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { SignsService } from './signs.service';
 import { SignDto } from './dto/signs.sreate.dto';
 import { Signs } from './schemas/signs.schema';
+import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('/signs')
 export class SignsController {
   constructor(private readonly signService: SignsService) {}
@@ -10,8 +20,9 @@ export class SignsController {
     return this.signService.getAll();
   }
   @Post()
-  create(@Body() dto: SignDto) {
-    return this.signService.create(dto);
+  @UseInterceptors(FileInterceptor('file'))
+  create(@Body() dto: SignDto, @UploadedFile() file: Express.Multer.File) {
+    return this.signService.create(dto, file);
   }
   @Get(':_id')
   async getById(@Param() _id: string): Promise<Signs | null> {
